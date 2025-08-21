@@ -1,6 +1,7 @@
-# special
+# Prompt Library
 
-A simple site that displays the daily Islamic prayer times for your current location.
+A simple static site for browsing and copying pre-built prompts. The prompts are stored in `prompts.js` and rendered on the page with basic search and category filtering.
 
-Open `index.html` in a browser and allow location access to view today's timings. The data comes from the AlAdhan API.
+## Usage
 
+Open `index.html` in a browser to view the library. Edit `prompts.js` to add, remove, or modify prompt entries.
