@@ -2,25 +2,82 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hello World</title>
+<title>Prayer Times Tracker</title>
 <style>
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  font-family: sans-serif;
   margin: 0;
+  padding: 2rem;
   background-color: #f0f0f0;
+  color: #333;
 }
 h1 {
-  font-size: 4rem;
-  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  text-align: center;
+}
+#times {
+  max-width: 400px;
+  margin: 2rem auto;
+  border-collapse: collapse;
+}
+#times td, #times th {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+}
+#location {
+  text-align: center;
+  margin-top: 1rem;
+}
+#error {
+  color: red;
+  text-align: center;
 }
 </style>
 </head>
 <body>
-<h1>Hello, world!</h1>
+<h1>Prayer Times</h1>
+<div id="location">Detecting location…</div>
+<table id="times" style="display:none;">
+  <thead><tr><th>Prayer</th><th>Time</th></tr></thead>
+  <tbody></tbody>
+</table>
+<div id="error"></div>
+
+<script>
+function renderTimes(data) {
+  const tbody = document.querySelector('#times tbody');
+  tbody.innerHTML = '';
+  const order = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+  order.forEach(prayer => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${prayer}</td><td>${data[prayer]}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('times').style.display = 'table';
+}
+
+function fetchTimes(lat, lon) {
+  fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`)
+    .then(r => r.json())
+    .then(json => {
+      renderTimes(json.data.timings);
+      document.getElementById('location').textContent = `Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
+    })
+    .catch(() => {
+      document.getElementById('error').textContent = 'Failed to fetch prayer times.';
+    });
+}
+
+if ('geolocation' in navigator) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    fetchTimes(pos.coords.latitude, pos.coords.longitude);
+  }, () => {
+    document.getElementById('error').textContent = 'Location access denied.';
+    document.getElementById('location').textContent = '';
+  });
+} else {
+  document.getElementById('error').textContent = 'Geolocation not supported.';
+  document.getElementById('location').textContent = '';
+}
+</script>
 </body>
 </html>
