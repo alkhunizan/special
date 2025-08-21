@@ -1,83 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Prayer Times Tracker</title>
-<style>
-body {
-  font-family: sans-serif;
-  margin: 0;
-  padding: 2rem;
-  background-color: #f0f0f0;
-  color: #333;
-}
-h1 {
-  text-align: center;
-}
-#times {
-  max-width: 400px;
-  margin: 2rem auto;
-  border-collapse: collapse;
-}
-#times td, #times th {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
-}
-#location {
-  text-align: center;
-  margin-top: 1rem;
-}
-#error {
-  color: red;
-  text-align: center;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Prompt Library</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>Prayer Times</h1>
-<div id="location">Detecting location…</div>
-<table id="times" style="display:none;">
-  <thead><tr><th>Prayer</th><th>Time</th></tr></thead>
-  <tbody></tbody>
-</table>
-<div id="error"></div>
-
-<script>
-function renderTimes(data) {
-  const tbody = document.querySelector('#times tbody');
-  tbody.innerHTML = '';
-  const order = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-  order.forEach(prayer => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${prayer}</td><td>${data[prayer]}</td>`;
-    tbody.appendChild(tr);
-  });
-  document.getElementById('times').style.display = 'table';
-}
-
-function fetchTimes(lat, lon) {
-  fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`)
-    .then(r => r.json())
-    .then(json => {
-      renderTimes(json.data.timings);
-      document.getElementById('location').textContent = `Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
-    })
-    .catch(() => {
-      document.getElementById('error').textContent = 'Failed to fetch prayer times.';
-    });
-}
-
-if ('geolocation' in navigator) {
-  navigator.geolocation.getCurrentPosition(pos => {
-    fetchTimes(pos.coords.latitude, pos.coords.longitude);
-  }, () => {
-    document.getElementById('error').textContent = 'Location access denied.';
-    document.getElementById('location').textContent = '';
-  });
-} else {
-  document.getElementById('error').textContent = 'Geolocation not supported.';
-  document.getElementById('location').textContent = '';
-}
-</script>
+  <header>
+    <h1>Prompt Library</h1>
+    <input type="text" id="search" placeholder="Search prompts..." />
+    <select id="category">
+      <option value="all">All Categories</option>
+    </select>
+    <select id="language">
+      <option value="en">English</option>
+      <option value="ar">العربية (نجدية)</option>
+    </select>
+  </header>
+  <section id="generator">
+    <h2>AI Prompt Generator</h2>
+    <textarea id="gen-input" placeholder="Describe your idea..."></textarea>
+    <button id="gen-btn">Generate</button>
+    <pre id="gen-output"></pre>
+  </section>
+  <main id="prompt-container"></main>
+  <script src="prompts.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
